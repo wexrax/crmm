@@ -9,14 +9,11 @@ body {
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s;
 }
-
-[data-theme="light"] body {
-  background: #f4f5f9;
-}
+[data-theme="light"] body { background: #f3f4f8; }
 
 h1, h2, h3, h4, h5, h6 { font-weight: 700; color: #fff; letter-spacing: -0.3px; }
 [data-theme="light"] h1, [data-theme="light"] h2, [data-theme="light"] h3,
-[data-theme="light"] h4, [data-theme="light"] h5, [data-theme="light"] h6 { color: #1e2132; }
+[data-theme="light"] h4, [data-theme="light"] h5, [data-theme="light"] h6 { color: #1b1f2e; }
 
 a { color: #818cf8; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
@@ -25,7 +22,7 @@ input { font-family: inherit; border: none; outline: none; background: none; col
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d5d8e0; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d0d4de; }
 
 @keyframes pulse {
   0%, 100% { box-shadow: 0 8px 30px rgba(139,92,246,0.6); }

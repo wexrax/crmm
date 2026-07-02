@@ -1,11 +1,14 @@
 function renderAnalytics() {
   const { stats, bars, funnel } = APP_DATA.analytics;
+  const light = isLightTheme();
 
   const statRowEl = document.getElementById('statRow');
   if (statRowEl) {
-    statRowEl.innerHTML = stats.map(s => `
+    statRowEl.innerHTML = stats.map(s => {
+      const iconBg = light ? s.color + '18' : s.color + '22';
+      return `
       <div class="stat-card">
-        <div class="stat-icon" style="background:${s.color}22;color:${s.color}">
+        <div class="stat-icon" style="background:${iconBg};color:${s.color}">
           <i class="fa-solid ${s.icon}"></i>
         </div>
         <div class="stat-value">${s.value}</div>
@@ -13,8 +16,8 @@ function renderAnalytics() {
         <div class="stat-trend" style="color:${s.trendUp ? 'var(--green)' : 'var(--amber)'}">
           <i class="fa-solid ${s.trendUp ? 'fa-arrow-up' : 'fa-clock'}"></i> ${s.trend}
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
   }
 
   const barsEl = document.getElementById('barChart');

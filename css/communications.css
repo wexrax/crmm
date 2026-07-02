@@ -6,13 +6,15 @@
   border-radius: 18px; padding: 20px; text-align: center;
   transition: 0.3s; cursor: pointer;
 }
+[data-theme="light"] .comm-card { background: linear-gradient(160deg, #ffffff 0%, #fafbfe 100%); border-color: var(--border); }
 .comm-card:hover {
   border-color: rgba(139,92,246,0.35);
   transform: translateY(-3px);
   box-shadow: 0 14px 36px rgba(0,0,0,0.35);
 }
+[data-theme="light"] .comm-card:hover { box-shadow: 0 6px 20px rgba(91,95,214,0.05), 0 2px 8px rgba(27,31,46,0.04); }
 .comm-card-icon { font-size: 26px; margin-bottom: 12px; }
 .comm-card-title { font-weight: 700; color: #fff; margin-bottom: 4px; }
-[data-theme="light"] .comm-card-title { color: #1e2132; }
+[data-theme="light"] .comm-card-title { color: var(--text); }
 .comm-card-desc { font-size: 11px; color: #8b93b0; }
-[data-theme="light"] .comm-card-desc { color: #6c7391; }
+[data-theme="light"] .comm-card-desc { color: var(--text-secondary); }

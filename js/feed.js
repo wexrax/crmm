@@ -1,6 +1,7 @@
 function renderFeed() {
   const container = document.getElementById('feed');
   let lastGroup = '';
+  const light = isLightTheme();
 
   container.innerHTML = APP_DATA.feedItems.map(item => {
     const groupHtml = item.group !== lastGroup
@@ -16,13 +17,18 @@ function renderFeed() {
         ).join('')}</div>`
       : '';
 
+    const tagBg = light ? item.tagBg.replace(/[\d.]+\)$/, m => {
+      const v = parseFloat(m);
+      return Math.min(v + 0.15, 0.4).toFixed(2) + ')';
+    }) : item.tagBg;
+
     return groupHtml + `
       <div class="${cardClass}">
         <div class="feed-card-icon" style="background:${item.iconBg};color:${item.iconColor}">
           <i class="fa-solid ${item.icon}"></i>
         </div>
         <div class="feed-card-body">
-          <span class="feed-card-tag" style="background:${item.tagBg};color:${item.tagColor}">${item.tag}</span>
+          <span class="feed-card-tag" style="background:${tagBg};color:${item.tagColor}">${item.tag}</span>
           <div class="feed-card-title">${item.title}</div>
           <div class="feed-card-desc">${item.desc}</div>
           ${actionsHtml}
@@ -36,6 +42,5 @@ function handleFeedAction(action, event) {
   const [type, val] = action.split(':');
   if (type === 'deal') openDealModal(parseInt(val));
   else if (type === 'call') showToast('Набираем ' + val + '… запись включена', 'fa-phone');
-  else if (type === 'ai') showToast('AI анализирует: ' + val, 'fa-wand-magic-sparkles');
   else if (type === 'toast') showToast(val);
 }

@@ -13,8 +13,11 @@ Thumbs.db
 .vscode/
 .idea/
 
+<<<<<<< HEAD
 # Examples / mockups
 examples/
 
+=======
+>>>>>>> origin/main
 # Logs
 *.log

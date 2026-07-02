@@ -3,6 +3,7 @@ function openDealModal(dealId) {
   if (!deal) return;
 
   const stage = APP_DATA.stages.find(s => s.id === deal.stage);
+  const light = isLightTheme();
   const avatarEl = document.getElementById('modalAvatar');
   const nameEl = document.getElementById('modalDealName');
   const metaEl = document.getElementById('modalDealMeta');
@@ -16,6 +17,9 @@ function openDealModal(dealId) {
   metaEl.textContent = `${deal.industry} · ${deal.city}`;
   amountEl.textContent = Utils.money(deal.amount);
   probEl.textContent = `${deal.prob}% готовность`;
+
+  const tlBg1 = light ? 'rgba(99,102,241,.12)' : 'rgba(99,102,241,.18)';
+  const tlBg2 = light ? 'rgba(168,85,247,.12)' : 'rgba(168,85,247,.18)';
 
   bodyEl.innerHTML = `
     <div class="modal-actions">
@@ -32,9 +36,9 @@ function openDealModal(dealId) {
       <div class="modal-info-item"><span>Стадия</span><b style="color:${stage.color}">${stage.name}</b></div>
     </div>
 
-    <h3 style="font-size:15px;margin-bottom:12px;color:#fff">Следующие шаги</h3>
+    <h3 style="font-size:15px;margin-bottom:12px;color:var(--text)">Следующие шаги</h3>
     <div class="timeline-item">
-      <div class="timeline-icon" style="background:rgba(99,102,241,.18);color:#818cf8"><i class="fa-solid fa-phone"></i></div>
+      <div class="timeline-icon" style="background:${tlBg1};color:#818cf8"><i class="fa-solid fa-phone"></i></div>
       <div class="timeline-body">
         <b>Позвонить клиенту</b>
         <p>Обсудить условия оплаты и сроки внедрения</p>
@@ -42,10 +46,10 @@ function openDealModal(dealId) {
       </div>
     </div>
     <div class="timeline-item">
-      <div class="timeline-icon" style="background:rgba(168,85,247,.18);color:#c084fc"><i class="fa-solid fa-file-lines"></i></div>
+      <div class="timeline-icon" style="background:${tlBg2};color:#c084fc"><i class="fa-solid fa-file-lines"></i></div>
       <div class="timeline-body">
         <b>Отправить обновлённое КП</b>
-        <p>ИИ подготовил черновик с учётом переговоров</p>
+        <p>Подготовлен черновик с учётом переговоров</p>
         <div class="timeline-time">До 16:00</div>
       </div>
     </div>
@@ -72,9 +76,5 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeDealModal();
-    const aiPanel = document.getElementById('aiPanel');
-    if (aiPanel.classList.contains('open')) toggleAIPanel();
-  }
+  if (e.key === 'Escape') closeDealModal();
 });

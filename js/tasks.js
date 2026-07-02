@@ -1,14 +1,20 @@
 function renderTasks() {
   const container = document.getElementById('taskList');
+  const light = isLightTheme();
 
   container.innerHTML = APP_DATA.tasks.map(t => {
     const badgeStyle = Utils.taskStatusColor(t.status);
+    const iconBg = light ? t.iconBg.replace(/[\d.]+\)$/, m => {
+      const v = parseFloat(m);
+      return Math.min(v + 0.12, 0.35).toFixed(2) + ')';
+    }) : t.iconBg;
+
     return `
       <div class="task-card ${t.done ? 'completed' : ''}" data-id="${t.id}" onclick="toggleTask(${t.id})">
         <div class="task-checkbox" onclick="event.stopPropagation(); toggleTask(${t.id})">
           <i class="fa-solid fa-check"></i>
         </div>
-        <div class="task-card-icon" style="background:${t.iconBg};color:${t.iconColor}">
+        <div class="task-card-icon" style="background:${iconBg};color:${t.iconColor}">
           <i class="fa-solid ${t.icon}"></i>
         </div>
         <div class="task-card-content">

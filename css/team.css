@@ -6,7 +6,9 @@
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 14px; transition: 0.25s; cursor: pointer;
 }
+[data-theme="light"] .team-member { background: #ffffff; border-color: var(--border); }
 .team-member:hover { background: rgba(255,255,255,0.08); transform: translateX(4px); }
+[data-theme="light"] .team-member:hover { background: #fafbfe; box-shadow: 0 4px 14px rgba(27,31,46,0.04); }
 .team-member-avatar {
   width: 42px; height: 42px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -18,14 +20,15 @@
   width: 11px; height: 11px; border-radius: 50%;
   border: 2px solid rgba(12,14,26,0.9);
 }
+[data-theme="light"] .team-member-status { border-color: #fff; }
 .status-online { background: #34d399; }
 .status-meeting { background: #fbbf24; }
 .status-away { background: #fbbf24; }
 .status-offline { background: #6b7280; }
 .team-member-info { flex: 1; min-width: 0; }
 .team-member-name { font-weight: 600; font-size: 15px; color: #fff; }
-[data-theme="light"] .team-member-name { color: #1e2132; }
+[data-theme="light"] .team-member-name { color: var(--text); }
 .team-member-role { font-size: 12.5px; color: #8b93b0; margin-top: 3px; }
-[data-theme="light"] .team-member-role { color: #6c7391; }
+[data-theme="light"] .team-member-role { color: var(--text-secondary); }
 .team-member-status-label { display: flex; align-items: center; gap: 6px; font-size: 11px; }
 .team-member-status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }

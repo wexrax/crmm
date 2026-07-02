@@ -75,9 +75,9 @@ const Utils = {
 
   taskStatusColor(s) {
     const map = {
-      work: 'background:rgba(99,102,241,.2);color:#818cf8',
-      review: 'background:rgba(245,158,11,.2);color:#fbbf24',
-      done: 'background:rgba(52,211,153,.2);color:#34d399',
+      work: 'background:rgba(99,102,241,.15);color:#6366f1',
+      review: 'background:rgba(245,158,11,.15);color:#d97706',
+      done: 'background:rgba(52,211,153,.15);color:#059669',
     };
     return map[s] || '';
   },
