@@ -1,3 +1,8 @@
+/* ===== Donut Chart ===== */
+svg .donut-center { fill: #e5e9f5; }
+svg .donut-label { fill: #8b93b0; }
+svg .donut-bg { stroke: rgba(255,255,255,.08); }
+
 /* ===== Tab Content Animation ===== */
 @keyframes tabPop {
   0% { transform: scale(0.95); }
@@ -889,8 +894,7 @@
   display: flex;
   align-items: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
 }
 .gantt-name {
   color: var(--text-dim);

@@ -72,10 +72,10 @@ function renderHrDashboard(hr) {
   '<text x="21" y="26" text-anchor="middle" class="donut-label" style="font-size:5.5px">откликов</text>' +
   '</svg>' +
   '<div style="display:flex;flex-direction:column;gap:12px;flex:1">' +
-  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)"><span style="width:12px;height:12px;border-radius:3px;background:#6366f1;flex-shrink:0"></span> hh.ru <b style="margin-left:auto;color:var(--text)">44%</b></div>' +
-  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)"><span style="width:12px;height:12px;border-radius:3px;background:#ec4899;flex-shrink:0"></span> Referral <b style="margin-left:auto;color:var(--text)">24%</b></div>' +
-  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)"><span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;flex-shrink:0"></span> Карьерный сайт <b style="margin-left:auto;color:var(--text)">18%</b></div>' +
-  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-dim)"><span style="width:12px;height:12px;border-radius:3px;background:#34d399;flex-shrink:0"></span> LinkedIn <b style="margin-left:auto;color:var(--text)">14%</b></div>' +
+  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary)"><span style="width:12px;height:12px;border-radius:3px;background:#6366f1;flex-shrink:0"></span> hh.ru <b style="margin-left:auto;color:var(--text)">44%</b></div>' +
+  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary)"><span style="width:12px;height:12px;border-radius:3px;background:#ec4899;flex-shrink:0"></span> Referral <b style="margin-left:auto;color:var(--text)">24%</b></div>' +
+  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary)"><span style="width:12px;height:12px;border-radius:3px;background:#f59e0b;flex-shrink:0"></span> Карьерный сайт <b style="margin-left:auto;color:var(--text)">18%</b></div>' +
+  '<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary)"><span style="width:12px;height:12px;border-radius:3px;background:#34d399;flex-shrink:0"></span> LinkedIn <b style="margin-left:auto;color:var(--text)">14%</b></div>' +
   '</div></div></div></div>' +
   '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px"><i class="fa-solid fa-bolt" style="color:var(--amber)"></i> Срочные действия на сегодня</div>' +
   '<div class="grid-3">' +
