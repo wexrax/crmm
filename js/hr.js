@@ -14,6 +14,7 @@ function renderHrTabs() {
     { id: 'vac', icon: 'fa-briefcase', label: 'Вакансии' },
     { id: 'onb', icon: 'fa-person-walking-arrow-right', label: 'Адаптация' },
     { id: 'grow', icon: 'fa-chart-line', label: 'Развитие · ИПР' },
+    { id: 'analytics', icon: 'fa-chart-simple', label: 'Аналитика' },
   ];
   el.innerHTML = tabs.map(t =>
     '<div class="mkt-tab' + (t.id === hrTabId ? ' active' : '') + '" onclick="setHrTab(\'' + t.id + '\')"><i class="fa-solid ' + t.icon + '"></i> ' + t.label + '</div>'
@@ -36,6 +37,7 @@ function renderHrContent() {
   else if (hrTabId === 'vac') el.innerHTML = '<div class="tab-content">' + renderHrVacancies(hr) + '</div>';
   else if (hrTabId === 'onb') el.innerHTML = '<div class="tab-content">' + renderHrOnboarding(hr) + '</div>';
   else if (hrTabId === 'grow') el.innerHTML = '<div class="tab-content">' + renderHrGrowth(hr) + '</div>';
+  else if (hrTabId === 'analytics') el.innerHTML = '<div class="tab-content">' + renderHrAnalytics(hr) + '</div>';
 }
 
 function renderHrDashboard(hr) {
@@ -136,4 +138,57 @@ function renderHrGrowth(hr) {
       '<div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--text)">' + p.n + '</div><div style="font-size:11px;color:var(--text-secondary)">' + p.role + ' → ' + p.goal + '</div></div></div>' +
       '<div style="margin-top:11px">' + skills + '</div></div>';
   }).join('') + '</div>';
+}
+
+function renderHrAnalytics() {
+  const channels = [
+    { n: 'hh.ru', hires: '29 наймов', cost: '₽ 38К/найм', v: 88, c: '#8b5cf6', ic: 'fa-globe' },
+    { n: 'Referral', hires: '18 наймов', cost: '₽ 12К/найм', v: 96, c: '#34d399', ic: 'fa-user-group' },
+    { n: 'LinkedIn', hires: '11 наймов', cost: '₽ 64К/найм', v: 56, c: '#3b82f6', ic: 'fa-link' },
+    { n: 'Карьерный сайт', hires: '14 наймов', cost: '₽ 8К/найм', v: 72, c: '#f59e0b', ic: 'fa-id-card' },
+  ];
+  const churn = [
+    { n: 'Поддержка', v: '18.2%', w: 94, c: '#f87171', ic: 'fa-headset' },
+    { n: 'Продажи', v: '11.5%', w: 76, c: '#fbbf24', ic: 'fa-handshake' },
+    { n: 'Разработка', v: '6.1%', w: 44, c: '#8b5cf6', ic: 'fa-code' },
+    { n: 'Маркетинг', v: '4.8%', w: 38, c: '#34d399', ic: 'fa-bullhorn' },
+  ];
+  const metrics = [
+    { v: '+42', l: 'eNPS вовлечённость', t: '+7', c: '#34d399', ic: 'fa-heart' },
+    { v: '91%', l: 'Качество найма', t: 'прошли испыт.', c: '#fbbf24', ic: 'fa-medal' },
+    { v: '4.7', l: 'Вакансий/рекрутёра', t: 'норма 5.0', c: '#818cf8', ic: 'fa-briefcase' },
+    { v: '46', l: 'В кадровом резерве', t: '+9 за квартал', c: '#f472b6', ic: 'fa-users' },
+  ];
+
+  return '<div class="hr-analytics-head">' +
+    '<button class="btn btn-primary btn-sm" onclick="showToast(\'Запуск поиска на рынке\', \'fa-magnifying-glass\')"><i class="fa-solid fa-magnifying-glass"></i> Поиск на рынке</button>' +
+    '</div>' +
+    '<div class="hr-ai-alert">' +
+      '<div><b><i class="fa-solid fa-wand-magic-sparkles"></i> Прогноз оттока · ИИ-прогноз</b>' +
+      '<p>У 3 ключевых сотрудников риск ухода &gt;70%: снижена вовлечённость, рост переработок, отсутствие роста 8 мес. Рекомендуем пересмотр грейда и ИПР для Игоря Новикова — снизит риск до 24%.</p></div>' +
+      '<div class="hr-ai-actions"><button class="btn btn-primary btn-sm" onclick="showToast(\'Программа удержания сформирована\', \'fa-shield-heart\')"><i class="fa-solid fa-shield-heart"></i> Программа удержания</button><button class="btn btn-sm" onclick="showToast(\'Детали прогноза\', \'fa-chart-line\')"><i class="fa-solid fa-list"></i> Детали</button></div>' +
+    '</div>' +
+    '<div class="hr-analytics-grid">' +
+      '<div class="mkt-panel"><div class="mkt-panel-title"><i class="fa-solid fa-chart-line" style="color:#818cf8"></i> Эффективность каналов найма</div>' +
+        channels.map(c => renderHrAnalyticsBar(c.n, c.hires + ' · ' + c.cost, c.v, c.c, c.ic)).join('') +
+      '</div>' +
+      '<div class="mkt-panel"><div class="mkt-panel-title"><i class="fa-solid fa-user-slash" style="color:#f87171"></i> Текучесть по отделам</div>' +
+        churn.map(c => renderHrAnalyticsBar(c.n, c.v, c.w, c.c, c.ic)).join('') +
+      '</div>' +
+    '</div>' +
+    '<div class="hr-metric-grid">' + metrics.map(m =>
+      '<div class="hr-metric-card">' +
+        '<div class="hr-metric-ic" style="background:' + m.c + '22;color:' + m.c + '"><i class="fa-solid ' + m.ic + '"></i></div>' +
+        '<div class="hr-metric-value">' + m.v + '</div>' +
+        '<div class="hr-metric-label">' + m.l + '</div>' +
+        '<div class="hr-metric-trend" style="color:' + m.c + '"><i class="fa-solid fa-arrow-up"></i> ' + m.t + '</div>' +
+      '</div>'
+    ).join('') + '</div>';
+}
+
+function renderHrAnalyticsBar(name, meta, value, color, icon) {
+  return '<div class="hr-bar-row">' +
+    '<div class="hr-bar-top"><span><i class="fa-solid ' + icon + '" style="color:' + color + '"></i> ' + name + '</span><b>' + meta + '</b></div>' +
+    '<div class="hr-bar-track"><div style="width:' + value + '%;background:' + color + '"></div></div>' +
+  '</div>';
 }

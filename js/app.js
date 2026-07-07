@@ -414,10 +414,14 @@ function searchIconHtml(icon) {
 function getIconClass(icon = 'fa-check') {
   const value = String(icon || 'fa-check').trim();
   if (value.includes('fa-solid') || value.includes('fa-regular') || value.includes('fa-brands')) {
-    return value;
+    return value.replace(/\bfa-sparkles\b/g, 'fa-wand-magic-sparkles');
   }
 
-  const iconName = value.startsWith('fa-') ? value : 'fa-' + value;
+  const aliases = {
+    'fa-sparkles': 'fa-wand-magic-sparkles',
+    sparkles: 'fa-wand-magic-sparkles',
+  };
+  const iconName = aliases[value] || (value.startsWith('fa-') ? value : 'fa-' + value);
   const brandIcons = ['fa-telegram', 'fa-whatsapp'];
   const family = brandIcons.includes(iconName) ? 'fa-brands' : 'fa-solid';
   return family + ' ' + iconName;

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NEXUS — Операционная система для бизнеса</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236366f1'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='34' font-family='Arial' font-weight='700' fill='white'%3EN%3C/text%3E%3C/svg%3E">
   <meta property="og:title" content="NEXUS CRM">
   <meta property="og:description" content="Умная CRM с лентой событий, сделками, задачами и аналитикой.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
@@ -190,7 +191,9 @@
       </div>
 
       <!-- CHATS -->
-      <div class="view" id="view-chats" style="height:calc(100vh - var(--topbar-height))">
+      <div class="view chats-view" id="view-chats">
+        <div class="view-title">Чаты и группы</div>
+        <div class="view-subtitle">Общение с командой, компаниями и клиентами — всё в одном мессенджере</div>
         <div class="messenger" id="messenger"></div>
       </div>
 
@@ -265,6 +268,11 @@
     </div>
     <div class="pm-body" id="procModalBody"></div>
   </div>
+</div>
+
+<!-- Board Task Modal -->
+<div class="overlay" id="boardTaskModal" onclick="if(event.target===this)closeBoardTask()">
+  <div class="board-task-modal" id="boardTaskModalContent"></div>
 </div>
 
 <!-- Toast -->

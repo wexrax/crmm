@@ -30,16 +30,16 @@ function renderBoards() {
 
   lanes.forEach(function(lane, li) {
     var cells = '';
-    lane.cols.forEach(function(col) {
+    lane.cols.forEach(function(col, ci) {
       var cards = '';
-      col.forEach(function(c) {
+      col.forEach(function(c, ti) {
         var tags = (c.tags || []).map(function(t) { return '<span class="tk-tag" style="background:' + t[1] + ';color:' + t[2] + '">' + t[0] + '</span>'; }).join('');
         var avs = '';
         if (c.avs) avs = c.avs.map(function(a) { return '<span class="tk-av" style="background:' + a[1] + ';margin-left:-6px">' + a[0] + '</span>'; }).join('');
         else if (c.av) avs = '<span class="tk-av" style="background:' + c.avc + '">' + c.av + '</span>';
         var due = c.due ? '<span class="tk-due" style="background:' + c.due[1] + '"><i class="fa-solid fa-hourglass-half"></i> ' + c.due[0] + '</span>' : '';
         var block = c.block ? '<i class="fa-solid fa-lock tk-block"></i>' : '';
-        cards += '<div class="tk-card" onclick="showToast(\'' + c.t.replace(/'/g, '') + '\', \'fa-clipboard-check\')">' +
+        cards += '<div class="tk-card" onclick="openBoardTask(' + li + ',' + ci + ',' + ti + ')">' +
           '<div class="tk-bar" style="background:' + (c.bar || '#6366f1') + '"></div>' + block +
           '<div class="tk-title">' + c.t + '</div>' + (tags ? '<div class="tk-tags">' + tags + '</div>' : '') +
           '<div class="tk-foot">' + avs + due + '</div></div>';
@@ -55,7 +55,7 @@ function renderBoards() {
   html += '<div style="margin-top:18px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.08));border:1px solid rgba(139,92,246,0.25);border-radius:16px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start">' +
     '<i class="fa-solid fa-brain" style="color:var(--accent-pink);font-size:18px;margin-top:2px"></i>' +
     '<div style="flex:1">' +
-      '<div style="font-weight:700;color:var(--text);font-size:13px;margin-bottom:5px">AI-прогноз рисков · метод Монте-Карло</div>' +
+      '<div style="font-weight:700;color:var(--text);font-size:13px;margin-bottom:5px">ИИ-прогноз рисков · метод Монте-Карло</div>' +
       '<div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55">Задача <b style="color:var(--text)">«Настройка в BPMSoft»</b> с вероятностью 68% сорвёт дедлайн из-за перегрузки исполнителя. Рекомендую перенести 12 ч трудозатрат на другого сотрудника — критический путь сократится на 4 дня.</div>' +
       '<div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap">' +
         '<button class="btn btn-primary btn-sm" onclick="showToast(\'Ресурсы перераспределены\', \'fa-people-arrows\')"><i class="fa-solid fa-people-arrows"></i> Перераспределить</button>' +
@@ -139,7 +139,7 @@ function renderGantt() {
     '<span class="gantt-tool" onclick="this.classList.toggle(\'active\')"><i class="fa-solid fa-route"></i> Критический путь</span>' +
     '<span class="gantt-tool" onclick="this.classList.toggle(\'active\')"><i class="fa-solid fa-link"></i> Связи</span>' +
     '<div style="flex:1"></div>' +
-    '<span class="gantt-tool" style="color:var(--accent-purple)" onclick="showToast(\'AI-анализ рисков\', \'fa-brain\')"><i class="fa-solid fa-brain"></i> AI-риски</span>' +
+    '<span class="gantt-tool" style="color:var(--accent-purple)" onclick="showToast(\'ИИ-анализ рисков\', \'fa-brain\')"><i class="fa-solid fa-brain"></i> ИИ-риски</span>' +
     '<span class="gantt-tool" onclick="showToast(\'Настройка колонок\', \'fa-table-columns\')"><i class="fa-solid fa-table-columns"></i> Настройка</span>' +
     '<span class="gantt-tool active" onclick="showToast(\'Сегодня\', \'fa-location-crosshairs\')"><i class="fa-solid fa-location-crosshairs"></i> Сегодня</span>' +
   '</div>';
@@ -209,4 +209,83 @@ function renderBoardCalendar() {
     '<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px">' + monthNames[month] + ' ' + year + '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">' + header + cells + '</div>' +
   '</div>';
+}
+
+function openBoardTask(laneIndex, colIndex, taskIndex) {
+  const lane = APP_DATA.boards.lanes[laneIndex];
+  const task = lane && lane.cols[colIndex] && lane.cols[colIndex][taskIndex];
+  const overlay = document.getElementById('boardTaskModal');
+  const content = document.getElementById('boardTaskModalContent');
+  if (!task || !overlay || !content) return;
+
+  const statuses = ['Очередь', 'В работе', 'Тестирование', 'Готово'];
+  const status = statuses[colIndex] || 'В работе';
+  const assignee = task.av || (task.avs && task.avs[0] && task.avs[0][0]) || 'АК';
+  const assigneeBg = task.avc || (task.avs && task.avs[0] && task.avs[0][1]) || 'linear-gradient(135deg,#6366f1,#a855f7)';
+  const tags = (task.tags || [['Frontend', 'rgba(99,102,241,.35)', '#a5b4fc'], ['MVP', 'rgba(52,211,153,.35)', '#34d399']])
+    .map(t => '<span class="tk-tag" style="background:' + t[1] + ';color:' + t[2] + '">' + bdEscape(t[0]) + '</span>')
+    .join('');
+  const checklist = [
+    { text: 'Согласовать ТЗ с заказчиком', done: true },
+    { text: 'Подготовить макеты интерфейса', done: true },
+    { text: 'Написать код фронтенда', done: status === 'Готово' },
+    { text: 'Покрыть тестами', done: status === 'Готово' },
+  ];
+  const doneCount = checklist.filter(i => i.done).length;
+  const progress = Math.round((doneCount / checklist.length) * 100);
+
+  content.innerHTML =
+    '<div class="board-task-head">' +
+      '<div class="board-task-icon" style="background:' + (task.bar || '#6366f1') + '"><i class="fa-solid fa-list-check"></i></div>' +
+      '<div class="board-task-title"><h2>' + bdEscape(task.t) + '</h2><p>Доска «Разработка» · ' + bdEscape(lane.name) + '</p></div>' +
+      '<button class="modal-close" onclick="closeBoardTask()"><i class="fa-solid fa-xmark"></i></button>' +
+    '</div>' +
+    '<div class="board-task-body">' +
+      '<div class="board-task-main">' +
+        '<div class="board-task-actions">' +
+          '<button class="btn btn-primary"><i class="fa-solid fa-layer-group"></i> ' + bdEscape(status) + '</button>' +
+          '<button class="btn" onclick="showToast(\'Таймер запущен\', \'fa-clock\')"><i class="fa-regular fa-clock"></i> Таймер</button>' +
+          '<button class="btn" onclick="showToast(\'Блокировка отмечена\', \'fa-lock\')"><i class="fa-solid fa-lock"></i> Блок</button>' +
+        '</div>' +
+        '<div class="board-section-title">Описание</div>' +
+        '<p class="board-task-desc">Реализовать раздел с учётом требований из ТЗ. Связать карточку с эпиком «Пилот MVP», приложить макеты и передать в проверку после тестов.</p>' +
+        '<div class="board-section-title">Чек-лист · подзадачи <span>' + doneCount + '/' + checklist.length + '</span></div>' +
+        '<div class="board-task-progress"><div style="width:' + progress + '%"></div></div>' +
+        '<div class="board-checklist">' + checklist.map(item =>
+          '<label class="board-check ' + (item.done ? 'done' : '') + '">' +
+            '<span><i class="fa-solid ' + (item.done ? 'fa-check' : 'fa-square') + '"></i></span>' +
+            '<b>' + bdEscape(item.text) + '</b>' +
+          '</label>'
+        ).join('') + '</div>' +
+        '<div class="board-section-title">Комментарии</div>' +
+        '<div class="board-comments">' +
+          '<div class="board-comment"><div class="tk-av" style="background:linear-gradient(135deg,#6366f1,#a855f7)">ДО</div><div><b>Дмитрий Орлов</b><p>Добавил задачу в спринт и приложил актуальные макеты.</p></div></div>' +
+          '<div class="board-comment"><div class="tk-av" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">АК</div><div><b>Анна Ковалёва</b><p>Проверю после обновления адаптива.</p></div></div>' +
+        '</div>' +
+      '</div>' +
+      '<aside class="board-task-side">' +
+        '<div class="side-block"><span>Исполнитель</span><div class="side-person"><div class="tk-av" style="background:' + assigneeBg + '">' + bdEscape(assignee) + '</div><b>' + (assignee === 'ДО' ? 'Дмитрий Орлов' : assignee === 'ОЗ' ? 'Ольга Зайцева' : assignee === 'МТ' ? 'Максим Титов' : 'Анна Ковалёва') + '</b></div></div>' +
+        '<div class="side-block"><span>Приоритет</span><b><i class="fa-solid fa-flag" style="color:#f87171"></i> ' + bdEscape(task.prio || 'Средний') + '</b></div>' +
+        '<div class="side-block"><span>Срок</span><b><i class="fa-regular fa-calendar" style="color:#fbbf24"></i> ' + (task.due ? bdEscape(task.due[0]) : 'через 7 дней') + '</b></div>' +
+        '<div class="side-block"><span>Метки</span><div class="tk-tags">' + tags + '</div></div>' +
+        '<div class="side-block"><span>Тип карточки</span><b><i class="fa-solid fa-puzzle-piece" style="color:#a855f7"></i> Фича</b></div>' +
+        '<div class="side-block ai-box"><b><i class="fa-solid fa-wand-magic-sparkles"></i> ИИ-прогноз срока</b><p>Риск задержки низкий: команда закрыла ' + progress + '% чек-листа.</p></div>' +
+      '</aside>' +
+    '</div>';
+
+  overlay.classList.add('open');
+}
+
+function closeBoardTask() {
+  const overlay = document.getElementById('boardTaskModal');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function bdEscape(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
