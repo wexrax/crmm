@@ -1,4 +1,5 @@
 let procFilter = 'wait';
+let procReplyTo = null;
 
 function renderProcesses() {
   renderProcTabs();
@@ -49,6 +50,8 @@ function openProcessModal(id) {
   const modal = document.getElementById('processModal');
   const body = document.getElementById('procModalBody');
 
+  procReplyTo = null;
+
   document.getElementById('procModalName').textContent = p.n;
   document.getElementById('procModalMeta').textContent = 'Статус: ' + p.st + ' · ' + p.step;
   const av = document.getElementById('procModalIcon');
@@ -78,18 +81,31 @@ function openProcessModal(id) {
     '<div class="pm-file"><i class="fa-solid ' + f.icon + '" style="color:var(--accent)"></i> <span>' + f.name + '</span></div>'
   ).join('');
 
-  const discussionHtml = (p.discussion || []).map(msg => {
+  const discussionHtml = (p.discussion || []).map(function(msg, idx) {
     if (msg.system) {
       return '<div class="pm-discuss-system">' + msg.text + '</div>';
     }
-    return '<div class="pm-discuss-msg">' +
+    let replyRefHtml = '';
+    if (msg.replyTo != null && msg.replyTo >= 0 && msg.replyTo < p.discussion.length) {
+      const refMsg = p.discussion[msg.replyTo];
+      const refWho = refMsg.who || '';
+      const refText = refMsg.text || '';
+      replyRefHtml = '<div class="reply-ref" onclick="scrollToProcMsg(' + p.id + ',' + msg.replyTo + ')">' +
+        '<div class="reply-ref-who">' + escapeHtml(refWho) + '</div>' +
+        '<div class="reply-ref-text">' + escapeHtml(refText) + '</div></div>';
+    }
+    return '<div class="pm-discuss-msg" data-proc-msg="' + idx + '">' +
       '<div class="pm-discuss-av" style="background:' + msg.avc + '">' + msg.av + '</div>' +
       '<div class="pm-discuss-body">' +
         '<div class="pm-discuss-head"><span class="pm-discuss-who">' + msg.who + '</span><span class="pm-discuss-time">' + msg.time + '</span></div>' +
+        replyRefHtml +
         '<div class="pm-discuss-text">' + msg.text + '</div>' +
       '</div>' +
+      '<div class="msg-reply-btn" onclick="startProcReply(' + p.id + ',' + idx + ')" title="Ответить"><i class="fa-solid fa-reply"></i></div>' +
     '</div>';
   }).join('');
+
+  const replyBarHtml = procReplyTo != null ? renderProcReplyBar(p) : '';
 
   body.innerHTML =
     '<div class="pm-layout">' +
@@ -111,6 +127,7 @@ function openProcessModal(id) {
         '<div class="pm-discuss">' +
           '<div class="pm-section-title"><i class="fa-solid fa-comments"></i> Лента обсуждения</div>' +
           '<div class="pm-discuss-list">' + discussionHtml + '</div>' +
+          replyBarHtml +
           '<div class="pm-discuss-input">' +
             '<input type="text" placeholder="Написать комментарий…" id="procDiscussInput" onkeydown="if(event.key===\'Enter\')addProcessComment(' + p.id + ')">' +
             '<button class="btn btn-primary btn-sm" onclick="addProcessComment(' + p.id + ')"><i class="fa-solid fa-paper-plane"></i></button>' +
@@ -131,11 +148,67 @@ function openProcessModal(id) {
   document.body.style.overflow = 'hidden';
 }
 
+function renderProcReplyBar(p) {
+  if (procReplyTo == null) return '';
+  const refMsg = p.discussion[procReplyTo];
+  if (!refMsg) return '';
+  return '<div class="msg-reply-bar" style="border-radius:10px;margin-bottom:8px">' +
+    '<div class="reply-accent"></div>' +
+    '<div class="reply-info">' +
+      '<div class="reply-who">Ответ ' + escapeHtml(refMsg.who || 'на сообщение') + '</div>' +
+      '<div class="reply-text">' + escapeHtml(refMsg.text || '') + '</div>' +
+    '</div>' +
+    '<button class="reply-cancel" onclick="cancelProcReply()"><i class="fa-solid fa-xmark"></i></button>' +
+  '</div>';
+}
+
+function startProcReply(procId, msgIdx) {
+  openProcessModal(procId);
+  procReplyTo = msgIdx;
+  var p = APP_DATA.processes.find(function(x) { return x.id === procId; });
+  if (p) {
+    var body = document.getElementById('procModalBody');
+    var barHtml = renderProcReplyBar(p);
+    var inputWrap = body.querySelector('.pm-discuss-input');
+    var oldBar = body.querySelector('.msg-reply-bar');
+    if (oldBar) oldBar.remove();
+    if (inputWrap && barHtml) {
+      inputWrap.insertAdjacentHTML('beforebegin', barHtml);
+    }
+  }
+  setTimeout(function() {
+    var inp = document.getElementById('procDiscussInput');
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function cancelProcReply() {
+  procReplyTo = null;
+  var modal = document.getElementById('processModal');
+  if (modal.classList.contains('open')) {
+    var p = APP_DATA.processes.find(function(x) {
+      return document.getElementById('procModalName').textContent === x.n;
+    });
+    if (p) openProcessModal(p.id);
+  }
+}
+
+function scrollToProcMsg(procId, msgIdx) {
+  var el = document.querySelector('[data-proc-msg="' + msgIdx + '"]');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.transition = 'background .3s';
+    el.style.background = 'rgba(139,92,246,.1)';
+    setTimeout(function() { el.style.background = ''; }, 1200);
+  }
+}
+
 function closeProcessModal() {
   const modal = document.getElementById('processModal');
   const pm = modal.querySelector('.pm');
   pm.classList.remove('pm-in');
   pm.classList.add('pm-exit');
+  procReplyTo = null;
   setTimeout(function() {
     modal.classList.remove('open');
     pm.classList.remove('pm-exit');
@@ -159,10 +232,15 @@ function addProcessComment(id) {
   const p = APP_DATA.processes.find(x => x.id === id);
   if (!p) return;
   if (!p.discussion) p.discussion = [];
-  p.discussion.push({
+  const msg = {
     who: 'Анна Иванова', av: 'АИ', avc: 'linear-gradient(135deg,#6366f1,#a855f7)',
     time: 'Сейчас', text: input.value.trim()
-  });
+  };
+  if (procReplyTo != null) {
+    msg.replyTo = procReplyTo;
+  }
+  p.discussion.push(msg);
   input.value = '';
+  procReplyTo = null;
   openProcessModal(id);
 }

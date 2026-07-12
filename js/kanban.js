@@ -1,3 +1,17 @@
+function renderFunnel() {
+  var el = document.getElementById('funnelStrip');
+  if (!el) return;
+  var data = APP_DATA.funnel;
+  el.innerHTML = '<div class="funnel-header"><i class="fa-solid fa-filter" style="color:var(--accent)"></i> Воронка продаж<span class="funnel-sub">Текущий квартал</span></div>' +
+    '<div class="funnel-rows">' + data.map(function(f) {
+      return '<div class="funnel-row">' +
+        '<span class="funnel-label">' + f.n + '</span>' +
+        '<div class="funnel-bar-wrap"><div class="funnel-bar" style="width:' + f.v + '%;background:' + f.c + '">' + f.v + '%</div></div>' +
+        '<span class="funnel-cnt">' + f.cnt + '</span>' +
+      '</div>';
+    }).join('') + '</div>';
+}
+
 function renderKanban() {
   const container = document.getElementById('kanban');
 

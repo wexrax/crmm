@@ -1,5 +1,5 @@
-/* Communications */
-.comms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; }
+/* Communications — legacy standalone view (kept for video/mail modules) */
+.view .comms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%; }
 .comm-card {
   background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.07);
@@ -253,22 +253,6 @@
 .mail-reader-preview p {
   color: var(--text-secondary);
   margin-bottom: 14px;
-}
-.mail-ai {
-  display: flex;
-  gap: 9px;
-  align-items: flex-start;
-  padding: 12px;
-  border: 1px solid rgba(168,85,247,.28);
-  border-radius: 12px;
-  background: rgba(168,85,247,.11);
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.45;
-}
-.mail-ai i {
-  color: #c4b5fd;
-  margin-top: 2px;
 }
 
 @media (max-width: 560px) {

@@ -6,11 +6,12 @@ function initApp() {
   document.documentElement.setAttribute('data-theme', savedTheme);
 
   renderFeed();
+  renderFunnel();
   renderKanban();
   renderTasks();
   renderTeam();
   renderCalendar();
-  renderComms();
+  renderCommsQuick();
   renderSettings();
   renderCompanies();
   renderContacts();
@@ -19,10 +20,12 @@ function initApp() {
   renderMarketing();
   renderHR();
   renderMessenger();
+  renderMail();
   renderHomeStats();
   renderHomeAnalytics();
   setupNavigation();
   setupGlobalSearch();
+  setupCommsDropdown();
 }
 
 function setupNavigation() {
@@ -104,14 +107,14 @@ function navigateTo(view) {
     deals: ['Сделки', '8 активных сделок · прогноз ₽ 18,4М'],
     companies: ['Компании', '248 компаний'],
     contacts: ['Контакты', '312 контактов'],
-    tasks: ['Задачи', '7 активных · 2 срочные'],
+    tasks: ['Задачи', '2 активных · 2 срочные'],
     proc: ['Процессы', '4 процесса · 3 требуют решения'],
     mkt: ['Маркетинг', 'Кампании · сегменты · ROI'],
     boards: ['Проекты', 'Канбан · Гантт · ресурсы'],
     hr: ['HR', '14 вакансий · 187 кандидатов'],
     team: ['Команда', '6 сотрудников'],
     chats: ['Чаты', 'Мессенджер команды'],
-    comms: ['Коммуникации', 'Видео · чат · почта · телефония'],
+    mail: ['Почта', 'Корпоративная почта с CRM-контекстом'],
     calendar: ['Календарь', 'Встречи и дедлайны'],
     settings: ['Настройки', 'Безопасность · роли · интеграции'],
     'company-card': ['', ''],
@@ -126,6 +129,7 @@ function navigateTo(view) {
   if (subEl) subEl.textContent = sub;
 
   if (view === 'chats') renderMessenger();
+  if (view === 'mail') renderMail();
   if (view === 'companies') renderCompanies();
   if (view === 'contacts') renderContacts();
 
@@ -273,7 +277,6 @@ function buildSearchIndex() {
     ['hr', 'Раздел', 'HR · Персонал', '14 вакансий · 187 кандидатов', 'fa-user-plus'],
     ['team', 'Раздел', 'Команда', '6 сотрудников', 'fa-users'],
     ['chats', 'Раздел', 'Чаты', 'мессенджер команды', 'fa-message'],
-    ['comms', 'Раздел', 'Коммуникации', 'видео · чат · почта · телефония', 'fa-comments'],
     ['calendar', 'Раздел', 'Календарь', 'встречи и дедлайны', 'fa-calendar-days'],
     ['settings', 'Раздел', 'Настройки', 'безопасность · роли · интеграции', 'fa-gear'],
   ].forEach(([view, type, title, meta, icon]) => add({ view, type, title, meta, icon }));
@@ -310,8 +313,8 @@ function buildSearchIndex() {
   APP_DATA.tasks.forEach(t => add({
     view: 'tasks',
     type: 'Задача',
-    title: t.name,
-    meta: `${Utils.taskStatusLabel(t.status)} · ${t.sub}`,
+    title: t.title,
+    meta: (t.done ? 'Выполнено' : 'В работе') + ' · ' + t.meta,
     icon: 'fa-circle-check',
   }));
 
@@ -332,14 +335,6 @@ function buildSearchIndex() {
     title: m.name,
     meta: `${m.role} · ${Utils.statusLabel(m.status)}`,
     icon: 'fa-user',
-  }));
-
-  APP_DATA.comms.forEach(c => add({
-    view: 'comms',
-    type: 'Коммуникации',
-    title: c.title,
-    meta: c.desc,
-    icon: c.icon,
   }));
 
   APP_DATA.settings.forEach(s => add({
@@ -414,14 +409,10 @@ function searchIconHtml(icon) {
 function getIconClass(icon = 'fa-check') {
   const value = String(icon || 'fa-check').trim();
   if (value.includes('fa-solid') || value.includes('fa-regular') || value.includes('fa-brands')) {
-    return value.replace(/\bfa-sparkles\b/g, 'fa-wand-magic-sparkles');
+    return value;
   }
 
-  const aliases = {
-    'fa-sparkles': 'fa-wand-magic-sparkles',
-    sparkles: 'fa-wand-magic-sparkles',
-  };
-  const iconName = aliases[value] || (value.startsWith('fa-') ? value : 'fa-' + value);
+  const iconName = value.startsWith('fa-') ? value : 'fa-' + value;
   const brandIcons = ['fa-telegram', 'fa-whatsapp'];
   const family = brandIcons.includes(iconName) ? 'fa-brands' : 'fa-solid';
   return family + ' ' + iconName;
@@ -451,10 +442,12 @@ function renderHomeStats() {
   const el = document.getElementById('homeStats');
   if (!el) return;
   const stats = [
-    { icon: 'fa-briefcase', color: '#818cf8', value: '₽ 24,8М', label: 'Сделки в работе', trend: '+18% за месяц', trendUp: true },
-    { icon: 'fa-bullseye', color: '#34d399', value: '85%', label: 'Выполнение плана', trend: '+5% к цели', trendUp: true },
+    { icon: 'fa-sack-dollar', color: '#34d399', value: '₽ 24,8М', label: 'Сделки в работе', trend: '+18% за месяц', trendUp: true },
+    { icon: 'fa-handshake', color: '#818cf8', value: '8', label: 'Активных сделок', trend: '+2 новых', trendUp: true },
     { icon: 'fa-list-check', color: '#fbbf24', value: '7', label: 'Активных задач', trend: '2 срочные', trendUp: false },
     { icon: 'fa-heart-pulse', color: '#f472b6', value: '96%', label: 'Здоровье базы', trend: 'Отлично', trendUp: true },
+    { icon: 'fa-bullseye', color: '#34d399', value: '85%', label: 'Выполнение плана', trend: '+5% к цели', trendUp: true },
+    { icon: 'fa-percent', color: '#818cf8', value: '28%', label: 'Конверсия', trend: '+3.1% за месяц', trendUp: true },
   ];
   el.innerHTML = stats.map(s => {
     const bg = s.color + '18';
@@ -467,5 +460,64 @@ function renderHomeStats() {
       '</div>';
   }).join('');
 }
+
+var notifData = [
+  { icon: 'fa-handshake', color: '#34d399', text: 'Сделка «Ромашка ООО» переведена в Переговоры', time: '5 мин назад', unread: true },
+  { icon: 'fa-circle-check', color: '#818cf8', text: 'Задача «Отправить КП» выполнена', time: '15 мин назад', unread: true },
+  { icon: 'fa-comment-dots', color: '#fbbf24', text: 'Дмитрий Орлов написал в чат «Запуск продукта»', time: '1 час назад', unread: true },
+  { icon: 'fa-envelope', color: '#f472b6', text: 'ГринЛайт открыл письмо с договором', time: '2 часа назад', unread: false },
+  { icon: 'fa-calendar', color: '#a855f7', text: 'Напоминание: демо для «АкваСтрой» завтра в 14:00', time: '3 часа назад', unread: false },
+];
+
+function renderNotifs() {
+  var list = document.getElementById('notifList');
+  if (!list) return;
+  list.innerHTML = notifData.map(function(n, i) {
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" onclick="readNotif(' + i + ')">' +
+      '<div class="notif-ic" style="background:' + n.color + '22;color:' + n.color + '"><i class="fa-solid ' + n.icon + '"></i></div>' +
+      '<div class="notif-body"><div class="notif-text">' + n.text + '</div><div class="notif-time">' + n.time + '</div></div>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleNotifs() {
+  var dd = document.getElementById('notifDropdown');
+  var isOpen = dd.classList.contains('open');
+  if (isOpen) {
+    dd.classList.remove('open');
+  } else {
+    dd.classList.add('open');
+    renderNotifs();
+  }
+}
+
+function readNotif(idx) {
+  notifData[idx].unread = false;
+  renderNotifs();
+  updateNotifBadge();
+}
+
+function clearNotifs() {
+  notifData = [];
+  renderNotifs();
+  updateNotifBadge();
+  document.getElementById('notifDropdown').classList.remove('open');
+}
+
+function updateNotifBadge() {
+  var count = notifData.filter(function(n) { return n.unread; }).length;
+  var badge = document.querySelector('#notifWrap .badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count ? '' : 'none';
+  }
+}
+
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('notifWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('notifDropdown').classList.remove('open');
+  }
+});
 
 document.addEventListener('DOMContentLoaded', initApp);

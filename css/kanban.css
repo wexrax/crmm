@@ -1,3 +1,66 @@
+/* Funnel Strip */
+.funnel-strip {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 18px;
+}
+.funnel-header {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.funnel-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+.funnel-rows { display: flex; flex-direction: column; gap: 10px; }
+.funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.funnel-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 110px;
+  flex-shrink: 0;
+}
+.funnel-bar-wrap {
+  flex: 1;
+  height: 28px;
+  background: var(--surface-3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.funnel-bar {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  transition: width .4s ease;
+}
+.funnel-cnt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* Kanban */
 .kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px; }
 .kanban-column {

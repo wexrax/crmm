@@ -44,14 +44,7 @@
     <div class="nav-item" data-view="hr"><i class="fa-solid fa-user-plus"></i><span class="tooltip">HR · Персонал</span></div>
     <div class="nav-item" data-view="team"><i class="fa-solid fa-users"></i><span class="tooltip">Команда</span></div>
     <div class="nav-item" data-view="chats"><i class="fa-solid fa-message"></i><span class="tooltip">Чаты</span></div>
-    <div class="nav-item" data-view="comms"><i class="fa-solid fa-comments"></i><span class="tooltip">Коммуникации</span></div>
-    <div class="nav-item" data-view="calendar"><i class="fa-solid fa-calendar-days"></i><span class="tooltip">Календарь</span></div>
     <div class="nav-spacer"></div>
-    <div class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
-      <i class="fa-solid fa-moon icon-sun"></i>
-      <i class="fa-solid fa-sun icon-moon"></i>
-      <span class="theme-toggle-label">Тема</span>
-    </div>
     <div class="nav-item" data-view="settings"><i class="fa-solid fa-gear"></i><span class="tooltip">Настройки</span></div>
   </aside>
 
@@ -68,9 +61,26 @@
         <div class="search-results" id="globalSearchResults"></div>
       </div>
       <div class="topbar-spacer"></div>
-      <div class="icon-btn" onclick="showToast('Видеозвонок запускается…', 'fa-video')"><i class="fa-solid fa-video"></i></div>
-      <div class="icon-btn" onclick="showToast('3 новых уведомления', 'fa-bell')"><i class="fa-solid fa-bell"></i><span class="badge">3</span></div>
-      <div class="avatar-sm" onclick="showToast('Профиль: Анна Иванова', 'fa-user')">АИ</div>
+      <div class="topbar-icon-wrap" data-tip="Календарь">
+        <div class="icon-btn" onclick="navigateTo('calendar')"><i class="fa-solid fa-calendar-days"></i></div>
+      </div>
+      <div class="comms-wrap" id="commsWrap" data-tip="Коммуникации">
+        <div class="icon-btn" onclick="toggleComms()"><i class="fa-solid fa-comments"></i></div>
+        <div class="comms-dropdown" id="commsDropdown">
+          <div class="comms-header"><span>Коммуникации</span></div>
+          <div class="comms-grid" id="commsQuickGrid"></div>
+        </div>
+      </div>
+      <div class="notif-wrap" id="notifWrap" data-tip="Уведомления">
+        <div class="icon-btn" onclick="toggleNotifs()"><i class="fa-solid fa-bell"></i><span class="badge">3</span></div>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-header"><span>Уведомления</span><span class="notif-clear" onclick="clearNotifs()">Очистить</span></div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+      </div>
+      <div class="topbar-icon-wrap" data-tip="Профиль">
+        <div class="avatar-sm" onclick="showToast('Профиль: Анна Иванова', 'fa-user')">АИ</div>
+      </div>
     </div>
 
     <div class="content">
@@ -103,6 +113,7 @@
       <div class="view" id="view-deals">
         <div class="view-title">Воронка продаж</div>
         <div class="view-subtitle">8 активных сделок · прогноз ₽ 18,4М</div>
+        <div id="funnelStrip" class="funnel-strip"></div>
         <div id="kanban" class="kanban"></div>
       </div>
 
@@ -131,7 +142,7 @@
       <!-- TASKS -->
       <div class="view" id="view-tasks">
         <div class="view-title">Задачи</div>
-        <div class="view-subtitle">7 активных · 2 срочные</div>
+        <div class="view-subtitle">2 активных · 2 срочные</div>
         <div id="taskList" class="task-list"></div>
       </div>
 
@@ -197,11 +208,9 @@
         <div class="messenger" id="messenger"></div>
       </div>
 
-      <!-- COMMS -->
-      <div class="view" id="view-comms">
-        <div class="view-title">Omnichannel Hub</div>
-        <div class="view-subtitle">Видео · чат · почта · телефония</div>
-        <div id="commsGrid" class="comms-grid"></div>
+      <!-- MAIL -->
+      <div class="view mail-view" id="view-mail">
+        <div class="mail-layout" id="mailLayout"></div>
       </div>
 
       <!-- CALENDAR -->
@@ -270,6 +279,16 @@
   </div>
 </div>
 
+<!-- Task Detail Modal -->
+<div class="overlay" id="taskDetailOverlay">
+  <div class="task-modal" id="taskDetailModal"></div>
+</div>
+
+<!-- Task Confirm Modal -->
+<div class="overlay" id="taskConfirmOverlay">
+  <div class="task-confirm" id="taskConfirmModal"></div>
+</div>
+
 <!-- Board Task Modal -->
 <div class="overlay" id="boardTaskModal" onclick="if(event.target===this)closeBoardTask()">
   <div class="board-task-modal" id="boardTaskModalContent"></div>
@@ -299,6 +318,7 @@
 <script src="js/marketing.js"></script>
 <script src="js/hr.js"></script>
 <script src="js/messenger.js"></script>
+<script src="js/mail.js"></script>
 <script src="js/app.js"></script>
 
 </body>

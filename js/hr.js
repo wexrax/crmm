@@ -163,11 +163,6 @@ function renderHrAnalytics() {
   return '<div class="hr-analytics-head">' +
     '<button class="btn btn-primary btn-sm" onclick="showToast(\'Запуск поиска на рынке\', \'fa-magnifying-glass\')"><i class="fa-solid fa-magnifying-glass"></i> Поиск на рынке</button>' +
     '</div>' +
-    '<div class="hr-ai-alert">' +
-      '<div><b><i class="fa-solid fa-wand-magic-sparkles"></i> Прогноз оттока · ИИ-прогноз</b>' +
-      '<p>У 3 ключевых сотрудников риск ухода &gt;70%: снижена вовлечённость, рост переработок, отсутствие роста 8 мес. Рекомендуем пересмотр грейда и ИПР для Игоря Новикова — снизит риск до 24%.</p></div>' +
-      '<div class="hr-ai-actions"><button class="btn btn-primary btn-sm" onclick="showToast(\'Программа удержания сформирована\', \'fa-shield-heart\')"><i class="fa-solid fa-shield-heart"></i> Программа удержания</button><button class="btn btn-sm" onclick="showToast(\'Детали прогноза\', \'fa-chart-line\')"><i class="fa-solid fa-list"></i> Детали</button></div>' +
-    '</div>' +
     '<div class="hr-analytics-grid">' +
       '<div class="mkt-panel"><div class="mkt-panel-title"><i class="fa-solid fa-chart-line" style="color:#818cf8"></i> Эффективность каналов найма</div>' +
         channels.map(c => renderHrAnalyticsBar(c.n, c.hires + ' · ' + c.cost, c.v, c.c, c.ic)).join('') +

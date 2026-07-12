@@ -68,18 +68,6 @@ function renderMktDashboard(m) {
     '</div>';
   }).join('') + '</div>';
 
-  var aiHtml = '<div class="mkt-ai-insight">' +
-    '<div class="mkt-ai-icon"><i class="fa-solid fa-brain"></i></div>' +
-    '<div style="flex:1">' +
-      '<div style="font-weight:700;color:var(--text);font-size:13px;margin-bottom:5px">Рекомендация AI · Next Best Campaign</div>' +
-      '<div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55">Сегмент <b style="color:var(--text)">«Спящие VIP»</b> (312 контактов) не покупал 45 дней, но имеет высокий LTV. Прогноз реактивации <b style="color:var(--green)">27%</b>. Рекомендую WhatsApp-цепочку с персональной скидкой 15% — ожидаемая выручка <b style="color:var(--accent-pink)">₽ 2,1М</b>.</div>' +
-      '<div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap">' +
-        '<button class="btn btn-primary btn-sm" onclick="showToast(\'AI сгенерировал сценарий\', \'fa-bolt\')"><i class="fa-solid fa-bolt"></i> Запустить</button>' +
-        '<button class="btn btn-sm" onclick="showToast(\'Детали сегмента\', \'fa-magnifying-glass-chart\')"><i class="fa-solid fa-magnifying-glass-chart"></i> Детали</button>' +
-      '</div>' +
-    '</div>' +
-  '</div>';
-
   var ld = m.leadDynamics;
   var maxVal = Math.max.apply(null, ld.series.reduce(function(a, s) { return a.concat(s.data); }, []));
   var chartH = 180;
@@ -173,7 +161,7 @@ function renderMktDashboard(m) {
       '</div>';
     }).join('') + '</div></div>';
 
-  return kpiHtml + aiHtml +
+  return kpiHtml +
     '<div class="mkt-dashboard-grid">' + lineChartHtml + donutHtml + '</div>' +
     '<div class="mkt-dashboard-grid">' + funnelHtml + calendarHtml + '</div>';
 }

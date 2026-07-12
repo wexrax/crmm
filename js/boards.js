@@ -52,18 +52,6 @@ function renderBoards() {
   });
   html += '</div></div>';
 
-  html += '<div style="margin-top:18px;background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.08));border:1px solid rgba(139,92,246,0.25);border-radius:16px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start">' +
-    '<i class="fa-solid fa-brain" style="color:var(--accent-pink);font-size:18px;margin-top:2px"></i>' +
-    '<div style="flex:1">' +
-      '<div style="font-weight:700;color:var(--text);font-size:13px;margin-bottom:5px">ИИ-прогноз рисков · метод Монте-Карло</div>' +
-      '<div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55">Задача <b style="color:var(--text)">«Настройка в BPMSoft»</b> с вероятностью 68% сорвёт дедлайн из-за перегрузки исполнителя. Рекомендую перенести 12 ч трудозатрат на другого сотрудника — критический путь сократится на 4 дня.</div>' +
-      '<div style="display:flex;gap:8px;margin-top:11px;flex-wrap:wrap">' +
-        '<button class="btn btn-primary btn-sm" onclick="showToast(\'Ресурсы перераспределены\', \'fa-people-arrows\')"><i class="fa-solid fa-people-arrows"></i> Перераспределить</button>' +
-        '<button class="btn btn-sm" onclick="showToast(\'Критический путь\', \'fa-route\')"><i class="fa-solid fa-route"></i> Критический путь</button>' +
-      '</div>' +
-    '</div>' +
-  '</div>';
-
   el.innerHTML = html;
 }
 
@@ -139,7 +127,6 @@ function renderGantt() {
     '<span class="gantt-tool" onclick="this.classList.toggle(\'active\')"><i class="fa-solid fa-route"></i> Критический путь</span>' +
     '<span class="gantt-tool" onclick="this.classList.toggle(\'active\')"><i class="fa-solid fa-link"></i> Связи</span>' +
     '<div style="flex:1"></div>' +
-    '<span class="gantt-tool" style="color:var(--accent-purple)" onclick="showToast(\'ИИ-анализ рисков\', \'fa-brain\')"><i class="fa-solid fa-brain"></i> ИИ-риски</span>' +
     '<span class="gantt-tool" onclick="showToast(\'Настройка колонок\', \'fa-table-columns\')"><i class="fa-solid fa-table-columns"></i> Настройка</span>' +
     '<span class="gantt-tool active" onclick="showToast(\'Сегодня\', \'fa-location-crosshairs\')"><i class="fa-solid fa-location-crosshairs"></i> Сегодня</span>' +
   '</div>';
@@ -269,7 +256,6 @@ function openBoardTask(laneIndex, colIndex, taskIndex) {
         '<div class="side-block"><span>Срок</span><b><i class="fa-regular fa-calendar" style="color:#fbbf24"></i> ' + (task.due ? bdEscape(task.due[0]) : 'через 7 дней') + '</b></div>' +
         '<div class="side-block"><span>Метки</span><div class="tk-tags">' + tags + '</div></div>' +
         '<div class="side-block"><span>Тип карточки</span><b><i class="fa-solid fa-puzzle-piece" style="color:#a855f7"></i> Фича</b></div>' +
-        '<div class="side-block ai-box"><b><i class="fa-solid fa-wand-magic-sparkles"></i> ИИ-прогноз срока</b><p>Риск задержки низкий: команда закрыла ' + progress + '% чек-листа.</p></div>' +
       '</aside>' +
     '</div>';
 

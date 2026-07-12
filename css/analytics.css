@@ -1,5 +1,5 @@
 /* Analytics */
-.dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+.dashboard { display: grid; grid-template-columns: 1fr; gap: 16px; }
 .panel {
   background: linear-gradient(160deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.07);

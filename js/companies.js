@@ -70,11 +70,22 @@ function openCompanyCard(idx, from) {
   var stars = '';
   for (var i = 0; i < 5; i++) stars += i < Math.floor(c.rating || 0) ? '★' : '☆';
 
-  var contactsHtml = (c.contacts || []).map(function(ct) {
+  var allContacts = (c.contacts || []).slice();
+  var companyName = c.n;
+  APP_DATA.contacts.forEach(function(ct) {
+    if (ct.company && (ct.company === companyName || companyName.indexOf(ct.company) > -1 || ct.company.indexOf(companyName.replace(/["]/g, '')) > -1)) {
+      var exists = allContacts.some(function(x) { return x.name === ct.n; });
+      if (!exists) {
+        allContacts.push({ name: ct.n, role: ct.role, tag: ct.phone, av: ct.n.split(' ').map(function(w) { return w[0]; }).slice(0, 2).join('').toUpperCase() });
+      }
+    }
+  });
+
+  var contactsHtml = allContacts.map(function(ct) {
     return '<div class="cc-contact">' +
       '<div class="cc-contact-av">' + ct.av + '</div>' +
       '<div class="cc-contact-info"><div class="cc-contact-name">' + ct.name + '</div>' +
-      '<div class="cc-contact-role">' + ct.role + ' <span class="cc-tag">' + ct.tag + '</span></div></div>' +
+      '<div class="cc-contact-role">' + ct.role + (ct.tag ? ' <span class="cc-tag">' + ct.tag + '</span>' : '') + '</div></div>' +
       '<div class="cc-contact-actions"><div class="cc-ic-btn"><i class="fa-solid fa-phone"></i></div><div class="cc-ic-btn"><i class="fa-solid fa-envelope"></i></div></div>' +
     '</div>';
   }).join('');
@@ -86,15 +97,6 @@ function openCompanyCard(idx, from) {
   var tagsHtml = (c.tags || []).map(function(t) {
     return '<span class="cc-chip">' + t + ' <i class="fa-solid fa-xmark x"></i></span>';
   }).join('') + '<span class="cc-chip cc-chip-add"><i class="fa-solid fa-plus"></i> Тег</span>';
-
-  var insightsHtml = (c.insights || []).map(function(ins) {
-    var riskBar = ins.risk ? '<div class="cc-risk-bar"><div class="cc-risk-fill" style="width:' + ins.risk + '%"></div></div>' : '';
-    var btn = ins.btn ? '<button class="cc-insight-btn" onclick="showToast(\'' + ins.btn.replace(/'/g, '') + '\', \'fa-check\')">' + ins.btn + '</button>' : '';
-    return '<div class="cc-insight cc-in-' + ins.type + '">' +
-      '<div class="cc-insight-icon"><i class="fa-solid ' + ins.icon + '"></i></div>' +
-      '<div class="cc-insight-body"><div class="cc-insight-t">' + ins.title + '</div><div class="cc-insight-d">' + ins.desc + '</div>' + riskBar + btn + '</div>' +
-    '</div>';
-  }).join('');
 
   var dealsHtml = (c.dealsList || []).map(function(d) {
     return '<div class="cc-deal"><div><div class="cc-deal-name">' + d.name + '</div><div class="cc-deal-sub">' + d.sub + '</div><span class="cc-deal-stage ' + d.stageClass + '">' + d.stage + '</span></div><div class="cc-deal-sum">' + d.sum + '</div></div>';
@@ -122,7 +124,7 @@ function openCompanyCard(idx, from) {
     '<div class="cc-chart-bar"><div class="cc-chart-bar-fill" style="height:' + (a.q2 || 0) + '%"></div><div class="cc-chart-bar-label">Q2</div></div>' +
     '<div class="cc-chart-bar"><div class="cc-chart-bar-fill" style="height:' + (a.q3 || 0) + '%"></div><div class="cc-chart-bar-label">Q3</div></div>' +
     '<div class="cc-chart-bar"><div class="cc-chart-bar-fill forecast" style="height:' + (a.q4 || 0) + '%"></div><div class="cc-chart-bar-label">Q4 (прогноз)</div></div>' +
-  '</div><p class="cc-desc" style="margin-top:8px">Прогноз ИИ: рост выручки на 22% в Q4 при закрытии текущих сделок.</p>';
+  '</div>';
 
   var historyHtml = (c.history || []).map(function(a) {
     return '<div class="cc-activity"><div class="cc-act-ic cc-act-' + a.cls.replace('act-', '') + '"><i class="fa-solid ' + a.icon + '"></i></div><div class="cc-act-txt">' + a.text + '<div class="cc-act-time">' + a.time + '</div></div></div>';
@@ -144,7 +146,7 @@ function openCompanyCard(idx, from) {
   }).join('');
 
   var html =
-    '<div class="cc-back" onclick="closeCompanyCard()"><i class="fa-solid fa-arrow-left"></i> К воронке продаж</div>' +
+    '<div class="cc-back" onclick="closeCompanyCard()"><i class="fa-solid fa-arrow-left"></i> ' + (window._cardBack === 'deals' ? 'К воронке продаж' : 'К компаниям') + '</div>' +
     '<div class="cc-hero"><div class="cc-hero-top">' +
       '<div class="cc-logo" style="background:' + c.c + '">' + initials + '</div>' +
       '<div class="cc-hero-main">' +
@@ -181,7 +183,7 @@ function openCompanyCard(idx, from) {
           '<div class="cc-field"><div class="cc-field-label">Регион</div><div class="cc-field-value">' + (c.city || '—') + '</div></div>' +
           '<div class="cc-field"><div class="cc-field-label">Годовой доход</div><div class="cc-field-value">' + (c.revenue || '—') + '</div></div>' +
         '</div>' +
-        '<div class="cc-card"><div class="cc-card-title">Ключевые контакты <span class="cc-edit">+ добавить</span></div>' + contactsHtml + '</div>' +
+        '<div class="cc-card"><div class="cc-card-title">Контакты <span class="cc-edit">+ добавить</span></div>' + contactsHtml + '</div>' +
         (relatedHtml ? '<div class="cc-card"><div class="cc-card-title">Связанные компании</div>' + relatedHtml + '</div>' : '') +
         '<div class="cc-card"><div class="cc-card-title">Источник</div><div class="cc-field"><div class="cc-field-value"><i class="fa-solid fa-bullhorn" style="color:var(--text-faint);margin-right:8px"></i>' + (c.source || '—') + '</div></div></div>' +
         '<div class="cc-card"><div class="cc-card-title">Теги</div><div class="cc-tags">' + tagsHtml + '</div></div>' +
@@ -190,12 +192,13 @@ function openCompanyCard(idx, from) {
         '<div class="cc-card">' +
           '<div class="cc-tabs" id="ccTabs">' +
             '<div class="cc-tab active" data-tab="cc-overview">Обзор</div>' +
+            '<div class="cc-tab" data-tab="cc-comments">Комментарии</div>' +
             '<div class="cc-tab" data-tab="cc-deals">Сделки</div>' +
             '<div class="cc-tab" data-tab="cc-comms">Коммуникации</div>' +
-            '<div class="cc-tab" data-tab="cc-contacts">Контакты</div>' +
             '<div class="cc-tab" data-tab="cc-docs">Документы</div>' +
             '<div class="cc-tab" data-tab="cc-analytics">Аналитика</div>' +
             '<div class="cc-tab" data-tab="cc-history">История</div>' +
+            '<div class="cc-tab" onclick="showToast(\'Встреча назначена\', \'fa-calendar-plus\')">Встреча</div>' +
           '</div>' +
           '<div class="cc-tab-pane" data-pane="cc-overview">' +
             '<div class="cc-metrics">' +
@@ -204,19 +207,27 @@ function openCompanyCard(idx, from) {
               '<div class="cc-metric"><div class="cc-metric-val">' + (c.avgCheck || '—') + '</div><div class="cc-metric-lbl">Средний чек</div></div>' +
             '</div>' +
             '<p class="cc-desc">' + (c.desc || '') + '</p>' +
-            (insightsHtml ? '<div class="cc-section-h"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--accent)"></i> Инсайты ИИ</div>' + insightsHtml : '') +
+          '</div>' +
+          '<div class="cc-tab-pane" data-pane="cc-comments" style="display:none">' +
+            '<div class="cc-section-h"><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Комментарии</div>' +
+            '<div class="cc-comments-list" id="companyComments">' +
+              ((c.comments || []).map(function(cm) {
+                return '<div class="cc-comment"><div class="cc-comment-av" style="background:' + cm.avc + '">' + cm.av + '</div><div class="cc-comment-body"><div class="cc-comment-head"><span class="cc-comment-who">' + cm.who + '</span><span class="cc-comment-time">' + cm.time + '</span></div><div class="cc-comment-text">' + cm.text + '</div></div></div>';
+              }).join('') || '<p class="cc-desc" style="margin-bottom:14px">Нет комментариев</p>') +
+            '</div>' +
+            '<div class="cc-comment-input">' +
+              '<input type="text" placeholder="Написать комментарий…" id="companyCommentInput" onkeydown="if(event.key===\'Enter\')addCompanyComment(' + idx + ')">' +
+              '<button class="btn btn-primary btn-sm" onclick="addCompanyComment(' + idx + ')"><i class="fa-solid fa-paper-plane"></i></button>' +
+            '</div>' +
           '</div>' +
           '<div class="cc-tab-pane" data-pane="cc-deals" style="display:none">' +
-            (dealsHtml ? '<div class="cc-section-h">Активные сделки</div>' + dealsHtml : '<p class="cc-desc">Нет активных сделок</p>') +
+            '<div class="cc-section-h" style="display:flex;align-items:center;justify-content:space-between">Активные сделки<button class="btn btn-primary btn-sm" onclick="showToast(\'Создание сделки\', \'fa-handshake\')"><i class="fa-solid fa-plus"></i> Создать сделку</button></div>' +
+            (dealsHtml || '<p class="cc-desc">Нет активных сделок</p>') +
             (closedDealsHtml ? '<div class="cc-section-h" style="margin-top:22px">Завершённые</div>' + closedDealsHtml : '') +
           '</div>' +
           '<div class="cc-tab-pane" data-pane="cc-comms" style="display:none">' +
             '<div class="cc-section-h">История коммуникаций</div>' +
             (commsHtml || '<p class="cc-desc">Нет коммуникаций</p>') +
-          '</div>' +
-          '<div class="cc-tab-pane" data-pane="cc-contacts" style="display:none">' +
-            '<div class="cc-section-h">Все контакты компании</div>' +
-            (contactsListHtml || '<p class="cc-desc">Нет контактов</p>') +
           '</div>' +
           '<div class="cc-tab-pane" data-pane="cc-docs" style="display:none">' +
             '<div class="cc-section-h">Документы</div>' +
@@ -235,14 +246,6 @@ function openCompanyCard(idx, from) {
       '<div class="cc-col">' +
         (nextStepsHtml ? '<div class="cc-card"><div class="cc-card-title">Следующие шаги</div>' + nextStepsHtml + '</div>' : '') +
         (tasksHtml ? '<div class="cc-card"><div class="cc-card-title">Активные задачи</div>' + tasksHtml + '</div>' : '') +
-        '<div class="cc-card"><div class="cc-card-title">Быстрые действия</div>' +
-          '<div class="cc-qa-grid">' +
-            '<button class="cc-qa" onclick="showToast(\'Создание сделки\', \'fa-handshake\')"><i class="fa-solid fa-handshake"></i><span>Создать сделку</span></button>' +
-            '<button class="cc-qa" onclick="showToast(\'Добавление контакта\', \'fa-user-plus\')"><i class="fa-solid fa-user-plus"></i><span>Добавить контакт</span></button>' +
-            '<button class="cc-qa" onclick="showToast(\'Назначение встречи\', \'fa-calendar-plus\')"><i class="fa-solid fa-calendar-plus"></i><span>Назначить встречу</span></button>' +
-            '<button class="cc-qa" onclick="showToast(\'Отправка письма\', \'fa-envelope\')"><i class="fa-solid fa-envelope"></i><span>Отправить письмо</span></button>' +
-          '</div>' +
-        '</div>' +
         (activitiesHtml ? '<div class="cc-card"><div class="cc-card-title">Последние активности</div>' + activitiesHtml + '</div>' : '') +
       '</div>' +
     '</div>';
@@ -279,6 +282,32 @@ function openCompanyCard(idx, from) {
 
 function closeCompanyCard() {
   navigateTo(window._cardBack || 'companies');
+}
+
+function addCompanyComment(idx) {
+  var input = document.getElementById('companyCommentInput');
+  if (!input || !input.value.trim()) return;
+  var c = APP_DATA.companies[idx];
+  if (!c) return;
+  if (!c.comments) c.comments = [];
+  var now = new Date();
+  var tm = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+  c.comments.push({
+    who: 'Анна Ковалёва', av: 'АК', avc: 'linear-gradient(135deg,#6366f1,#a855f7)',
+    time: 'Сейчас ' + tm, text: input.value.trim()
+  });
+  input.value = '';
+
+  var list = document.getElementById('companyComments');
+  if (list) {
+    var emptyMsg = list.querySelector('.cc-desc');
+    if (emptyMsg) emptyMsg.remove();
+    var cm = c.comments[c.comments.length - 1];
+    var div = document.createElement('div');
+    div.className = 'cc-comment cc-comment-new';
+    div.innerHTML = '<div class="cc-comment-av" style="background:' + cm.avc + '">' + cm.av + '</div><div class="cc-comment-body"><div class="cc-comment-head"><span class="cc-comment-who">' + cm.who + '</span><span class="cc-comment-time">' + cm.time + '</span></div><div class="cc-comment-text">' + cm.text + '</div></div>';
+    list.appendChild(div);
+  }
 }
 
 function openDealByType(dealId) {
@@ -407,7 +436,7 @@ function openContactCard(idx, from) {
 
   var el = document.getElementById('contactCardContent');
   el.innerHTML =
-    '<div class="cc-back" onclick="closeContactCard()"><i class="fa-solid fa-arrow-left"></i> К воронке продаж</div>' +
+    '<div class="cc-back" onclick="closeContactCard()"><i class="fa-solid fa-arrow-left"></i> ' + (window._cardBack === 'deals' ? 'К воронке продаж' : 'К контактам') + '</div>' +
     '<div class="cc-hero"><div class="cc-hero-top">' +
       '<div class="cc-logo" style="background:' + c.c + '">' + initials + '</div>' +
       '<div class="cc-hero-main">' +
@@ -428,6 +457,7 @@ function openContactCard(idx, from) {
         '<div class="cc-card">' +
           '<div class="cc-tabs" id="contactTabs">' +
             '<div class="cc-tab active" data-tab="cn-overview">Обзор</div>' +
+            '<div class="cc-tab" data-tab="cn-comments">Комментарии</div>' +
             '<div class="cc-tab" data-tab="cn-comms">Коммуникации</div>' +
             '<div class="cc-tab" data-tab="cn-deals">Сделки</div>' +
             '<div class="cc-tab" data-tab="cn-tasks">Задачи</div>' +
@@ -442,11 +472,25 @@ function openContactCard(idx, from) {
               '<div class="pm-info-card"><div class="pm-info-label">Должность</div><div class="pm-info-value">' + (c.role || '—') + '</div></div>' +
               '<div class="pm-info-card"><div class="pm-info-label">Ответственный</div><div class="pm-info-value">' + c.resp + '</div></div>' +
               '<div class="pm-info-card"><div class="pm-info-label">Дата создания</div><div class="pm-info-value">' + c.date + '</div></div>' +
+              '<div class="pm-info-card"><div class="pm-info-label">Дата рождения</div><div class="pm-info-value">' + (c.bday || '—') + '</div></div>' +
+              '<div class="pm-info-card"><div class="pm-info-label">Город</div><div class="pm-info-value">' + (c.city || '—') + '</div></div>' +
             '</div>' +
             (c.nextSteps && c.nextSteps.length ? '<div style="margin-top:20px"><div class="cc-section-h">Следующие шаги</div>' +
               c.nextSteps.map(function(s) {
                 return '<div class="cc-next-step"><i class="fa-solid ' + s.icon + ' cc-ns-ic"></i><div class="cc-ns-body"><div class="cc-ns-t">' + s.text + '</div><div style="font-size:11px;color:var(--text-faint);margin-top:4px">' + (s.when || '') + '</div></div></div>';
               }).join('') + '</div>' : '') +
+          '</div>' +
+          '<div class="cc-tab-pane" data-pane="cn-comments" style="display:none">' +
+            '<div class="cc-section-h"><i class="fa-solid fa-comments" style="color:var(--accent)"></i> Комментарии</div>' +
+            '<div class="cc-comments-list" id="contactComments">' +
+              ((c.comments || []).map(function(cm) {
+                return '<div class="cc-comment"><div class="cc-comment-av" style="background:' + cm.avc + '">' + cm.av + '</div><div class="cc-comment-body"><div class="cc-comment-head"><span class="cc-comment-who">' + cm.who + '</span><span class="cc-comment-time">' + cm.time + '</span></div><div class="cc-comment-text">' + cm.text + '</div></div></div>';
+              }).join('') || '<p class="cc-desc" style="margin-bottom:14px">Нет комментариев</p>') +
+            '</div>' +
+            '<div class="cc-comment-input">' +
+              '<input type="text" placeholder="Написать комментарий…" id="contactCommentInput" onkeydown="if(event.key===\'Enter\')addContactComment(' + idx + ')">' +
+              '<button class="btn btn-primary btn-sm" onclick="addContactComment(' + idx + ')"><i class="fa-solid fa-paper-plane"></i></button>' +
+            '</div>' +
           '</div>' +
           '<div class="cc-tab-pane" data-pane="cn-comms" style="display:none">' +
             '<div class="cc-section-h">История коммуникаций</div>' +
@@ -508,4 +552,30 @@ function openContactCard(idx, from) {
 
 function closeContactCard() {
   navigateTo(window._cardBack || 'contacts');
+}
+
+function addContactComment(idx) {
+  var input = document.getElementById('contactCommentInput');
+  if (!input || !input.value.trim()) return;
+  var c = APP_DATA.contacts[idx];
+  if (!c) return;
+  if (!c.comments) c.comments = [];
+  var now = new Date();
+  var tm = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+  c.comments.push({
+    who: 'Анна Ковалёва', av: 'АК', avc: 'linear-gradient(135deg,#6366f1,#a855f7)',
+    time: 'Сейчас ' + tm, text: input.value.trim()
+  });
+  input.value = '';
+
+  var list = document.getElementById('contactComments');
+  if (list) {
+    var emptyMsg = list.querySelector('.cc-desc');
+    if (emptyMsg) emptyMsg.remove();
+    var cm = c.comments[c.comments.length - 1];
+    var div = document.createElement('div');
+    div.className = 'cc-comment cc-comment-new';
+    div.innerHTML = '<div class="cc-comment-av" style="background:' + cm.avc + '">' + cm.av + '</div><div class="cc-comment-body"><div class="cc-comment-head"><span class="cc-comment-who">' + cm.who + '</span><span class="cc-comment-time">' + cm.time + '</span></div><div class="cc-comment-text">' + cm.text + '</div></div>';
+    list.appendChild(div);
+  }
 }
